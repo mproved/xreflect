@@ -2,30 +2,35 @@ package xreflect
 
 import "reflect"
 
-func IsZero(v any) bool {
-	e := reflect.ValueOf(&v)
+func IsZero(value any) bool {
+	if value == nil {
+		return true
+	}
+
+	valueOf := reflect.ValueOf(value)
 
 	for {
-		if e.Kind() == reflect.Interface || e.Kind() == reflect.Pointer {
-			e = e.Elem()
+		if valueOf.Kind() == reflect.Interface ||
+			valueOf.Kind() == reflect.Pointer {
+			valueOf = valueOf.Elem()
 		} else {
 			break
 		}
 	}
 
-	zero := e.IsZero()
-
-	return zero
+	return valueOf.IsZero()
 }
 
-func IsNil(v any) bool {
-	if v == nil {
+func IsNil(value any) bool {
+	if value == nil {
 		return true
 	}
 
-	switch reflect.TypeOf(v).Kind() {
+	valueOf := reflect.ValueOf(value)
+
+	switch valueOf.Kind() {
 	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Ptr, reflect.Slice:
-		return reflect.ValueOf(v).IsNil()
+		return valueOf.IsNil()
 	default:
 		return false
 	}
